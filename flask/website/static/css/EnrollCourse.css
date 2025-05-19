@@ -1,0 +1,99 @@
+.card h3 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.card p {
+    margin-bottom: 10px;
+}
+
+.card p strong {
+    color: #000;
+}
+
+.rejected:hover {
+    transform: translateY(0px);
+}
+
+.enrollButton {
+    background-color: #4CAF50;
+    color: #FFF;
+    width: 100%;
+    text-align: center;
+    border: none;
+    padding: 1rem;
+    border-radius: 2rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: block;
+    margin-top: 20px;
+}
+
+.enrollButton:hover {
+    background: #45a049;
+}
+
+label {
+    color: #FFF;
+}
+
+select {
+    appearance: none;
+}
+
+h2 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+#toastBox {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    padding: 20px;
+    display: flex;
+    align-items: flex-end;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.toast {
+    width: 300px;
+    height: 50px;
+    background-color: #FFF;
+    font-weight: 500;
+    color: #222;
+    margin: 1rem 0;
+    box-shadow: 0 0 1rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    transform: translateX(100%);
+    animation: moveleft 0.4s linear forwards;
+    font-size: 1rem;
+}
+
+@keyframes moveleft {
+    100% {
+        transform: translateX(0);
+    }
+}
+
+.toast::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 5px;
+    background-color: #45a049;
+    animation: anim 2s linear forwards;
+}
+
+@keyframes anim {
+    100% {
+        width: 0;
+    }
+}

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ discussion.title }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/discussion.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_discussions', course_id=course_id) }}" class="back-button">Back</a>
+        
+        <main>
+            <h1>{{ discussion.title }}</h1>
+            <section class="card" id="discussion-card">
+                <h3 class="discussion-description">Description: {{ discussion.content }}</h3>
+                <p class="posted-by">Posted by {{ discussion_author }} on {{ discussion.date_posted }}</p>
+            </section>
+            <section>
+                <h2>Replies</h2>
+                <div>
+                    {% for reply, username in replies %}
+                    <div class="card options reply-div">
+                        <p class="reply">{{ reply.content }}</p>
+                        <p>{{ username }}, {{ reply.date_posted }}</p>
+                    </div>
+                    {% else %}
+                    <p>No replies yet. Be the first to reply!</p>
+                    {% endfor %}
+                </div>
+                <div id="comment-box">
+                    <form class="reply-form" method="POST" action="{{ url_for('views.submit_reply', discussion_id=discussion.id, course_id=course_id) }}">
+                        <textarea name="reply_content" placeholder="Write your reply here" required></textarea>
+                        <button type="submit" class="submit-reply">Post Reply</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            function addComment() {
+                var comment = $("#comment").value
+                var commentsContainer = $("#comments-container")
+
+                // Append a new comment
+                var commentContainer = $("<div></div>").addClass("comment-container")
+                var newComment = $("<p></p>").text(comment)
+                commentContainer.append(newComment);
+                commentsContainer.append(commentContainer);
+
+                // Clear the textarea
+                $("#comment").val("");
+            }
+        </script>
+    </body>
+</html>
+

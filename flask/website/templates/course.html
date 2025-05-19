@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ course.course_code }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+</head>
+
+<body>
+    {% include 'sidebar.html' %}
+    <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+    <main>
+        <h1>{{ course.course_code }}: {{ course.course_name }}</h1>
+        <div class="card info-box">
+            <p><strong>Description:</strong> {{ course.course_desc }}</p>
+            <p><strong>Registration Limit:</strong> {{ course.course_limit }}</p>
+            <p><strong>Instructor:</strong> {{ teacher.first_name }} {{ teacher.last_name }}</p>
+            <p><strong>Instructor ID:</strong> {{ course.teacher_id }}</p>
+        </div>
+
+        <h2>Resources</h2>
+        {% if course.resources or course.resource_link %}
+            <div class="section-content">
+                {% if course.resources %}
+                    <p><strong>Files:</strong></p>
+                    <ul>
+                        {% for file in course.resources.split(',') %}
+                            <li>
+                                <a href="{{ url_for('static', filename='uploads/' ~ file.strip()) }}" target="_blank">
+                                    {{ file.strip() }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if course.resource_link %}
+                    <p><strong>Links:</strong></p>
+                    <ul>
+                        {% for link in course.resource_link.split(',') %}
+                            <li>
+                                <a href="{{ link.strip() }}" target="_blank">{{ link.strip() }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+        {% else %}
+            <p>No resources uploaded for this course.</p>
+        {% endif %}
+
+        <h2>Quizzes</h2>
+        {% if quizzes %}
+        <div class="section-content">
+            {% for quiz in quizzes %}
+            <a href="{{ url_for('views.quiz_page', course_id=course.id, quiz_id=quiz.id) }}" class="card assignments">
+                <h3>{{ quiz.quiz_name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            {% if current_user.user_type == 'teacher' %}
+                <p>There are no quizzes created yet in this course. Create one by clicking the Create assignment button below.</p>
+            {% else %}
+                <p>There are no quizzes created yet in this course.</p>
+            {% endif %}
+        {% endif %}
+
+        <h2>Essays</h2>
+        {% if essays %}
+        <div class="section-content">
+            {% for essay in essays %}
+            <a href="{{ url_for('views.essay_page', course_id=course.id, essay_id=essay.id) }}" class="card assignments">
+                <h3>{{ essay.essay_name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            {% if current_user.user_type == 'teacher' %}
+                <p>There are no essays created yet in this course. Create one by clicking the Create assignment button below.</p>
+            {% else %}
+                <p>There are no essays created yet in this course.</p>
+            {% endif %}
+        {% endif %}
+
+        {% if current_user.user_type == 'teacher' %}
+        <h2>Grade Assignments</h2>
+        {% if essays or quizzes %}
+        <div class="sub-assignments">
+            {% if quizzes %}
+            <h3>Quizzes</h3>
+            {% for quiz in quizzes %}
+                <h4>{{ quiz.quiz_name }}</h4>
+                {% if not quiz_submissions[quiz.id] %}
+                    <p>No submissions to grade</p>
+                {% endif %}
+                <div>
+                    {% for student_id, info in quiz_submissions[quiz.id].items() %}
+                        {% if not info.graded %}
+                            <a href="{{ url_for('views.grade_quiz', course_id=course.id, quiz_id=quiz.id, student_id=student_id) }}">
+                                Grade: {{ info.student_name }}
+                            </a>
+                        {% else %}
+                            <span>• {{ info.student_name }}: Graded</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="sub-assignments">
+            {% if essays %}
+            <h3>Essays</h3>
+            {% for essay in essays %}
+                <h4>{{ essay.essay_name }}</h4>
+                <div>
+                    {% if not essay_submissions[essay.id] %}
+                        <p>No submissions to grade</p>
+                    {% endif %}
+                    {% for student_id, info in essay_submissions[essay.id].items() %}
+                        {% if not info.graded %}
+                            <a href="{{ url_for('views.grade_essay', course_id=course.id, essay_id=essay.id, student_id=student_id) }}">
+                                Grade: {{ info.student_name }}
+                            </a>
+                        {% else %}
+                            <span>• {{ info.student_name }}: Graded</span>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% else %}
+            <p>There are no assignments created yet in this course. Create one by clicking the Create assignment button below.</p>
+        {% endif %}
+        {% endif %}
+
+        <div class="section-content">
+            <a href="{{ url_for('views.course_discussions', course_id=course.id) }}">
+                <h3 class="card options">View Discussions</h3>
+            </a>
+            {% if current_user.user_type == 'student' %}
+                <a href="{{ url_for('views.grade_page', course_id=course.id) }}">
+                    <h3 class="card options">View Your Grades</h3>
+                </a>
+            {% endif %}
+            {% if current_user.user_type == 'teacher' %}
+                <a href="{{ url_for('views.createAssignment', course_id=course.id) }}">
+                    <h3 class="card options">Create Assignment</h3>
+                </a>
+            {% endif %}
+        </div>
+    </main>
+</body>
+
+</html>

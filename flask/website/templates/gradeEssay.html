@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grade Essay</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/gradeAssignment.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+        
+        <main>
+            <div class="card">
+                <div class="assignment-details">
+                    <h1>Grade Essay</h1>
+                    <h3>Assignment Name: {{ essay.essay_name }}</h3>
+                    <h3>Student: {{ student.first_name }} {{ student.last_name }}</h3>
+                    <h3>Max Grade: {{ submission.max_grade }}</h3>
+                </div>
+
+                <form name="grading"
+                    action="{{ url_for('views.grade_essay', course_id=course_id, essay_id=essay.id, student_id=student.id) }}"
+                    method="POST">
+                    <div class="question">
+                        <h4>Essay Question:</h4>
+                        {% if question.question_type == 'file' %}
+                            <embed src="{{ question_data_uri }}" width="90%" height="300px">
+                        {% elif question.question_type == 'text' %}
+                            <p>{{ question.question_text }}</p>
+                        {% endif %}
+
+                        <h4>Student Answer:</h4>
+                        {% if submission.answer_type == 'text' %}
+                            <p>{{ submission.answer_text }}</p>
+                        {% elif submission.answer_type == 'file' %}
+                            <embed src="{{ answer_data_uri }}" width="90%" height="400px">
+                        {% endif %}
+                        <br>
+                        <label for="essay-grade">Grade Essay:</label>
+                        <input type="number" name="essay-grade" placeholder="Grade out of {{ submission.max_grade }}" min="0"
+                            max="{{ submission.max_grade }}" required>
+                    </div>
+
+                    <button type="submit">Submit Grade</button>
+                </form>
+            </div>
+        </main>
+    </body>
+</html>

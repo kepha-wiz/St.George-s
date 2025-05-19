@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Course Enrollment</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/EnrollCourse.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Enroll Into Courses</h1>
+            <section class="section-content">
+                <h2>Available Courses</h2>
+                {% if courses %}
+                    {% for course in courses %}
+                        <div class="card">
+                            <h3>{{ course.course_code }}: {{ course.course_name }}</h3>
+                            <p>{{ course.course_desc }}</p>
+                            <p><strong>Instructor:</strong> {{ course.first_name }} {{ course.last_name }}</p>
+                            <p><strong>Total Students:</strong> {{ course.course_limit }}</p>
+                            <form method="POST" action="{{ url_for('views.createRequest') }}">
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <input type="submit" class="enrollButton" id="request_enroll_button" value="Request to Enroll">
+                            </form>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h4>No Available Courses</h4>
+                {% endif %}
+            </section>
+
+            <h2>Rejected Enrollment Requests</h2>
+            <section class="section-content">
+                {% for course in rejected %}
+                <div class="card rejected">
+                    <h3>{{ course.course_code }}: {{ course.course_name }}</h3>
+                    <p>{{ course.course_desc }}</p>
+                    <p><strong>Instructor:</strong> {{ course.first_name }} {{ course.last_name }}</p>
+                    <p><strong>Total Students:</strong> {{ course.course_limit }}</p>
+                </div>
+                {% endfor %}
+            </section>
+        </main>
+        <div id="toastBox"></div>
+        <script>
+            $(document).ready(function() {
+                let toastBox = $('#toastBox')
+
+                function showToast() {
+                    let toast = $('<div></div>')
+                        .addClass('toast')
+                        .text("Enrollment Request Sent")
+                    toastBox.append(toast)
+
+                    setTimeout(function() {
+                        toast.remove()
+                    }, 2000)
+                }
+
+                $('.enrollButton').on('click', function(event) {
+                    event.preventDefault()
+                    showToast()
+                    let form = this.closest('form')
+                    setTimeout(function() {
+                    if (form) form.submit()
+                    }, 2000)
+                })
+            })
+        </script>
+    </body>
+</html>

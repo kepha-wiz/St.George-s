@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Course Grades</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/viewGrades.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Your Grades</h1>
+            <section class="card">
+                <h3>Quizzes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quiz</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quiz in quizzes %}
+                        <tr>
+                            <td>{{ quiz.quiz_name }}</td>
+                            <td>{{ quiz_grades[quiz.id] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h3>Essays</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Essay</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for essay in essays %}
+                        <tr>
+                            <td>{{ essay.essay_name }}</td>
+                            <td>{{ essay_grades[essay.id] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </body>
+</html>

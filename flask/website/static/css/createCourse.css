@@ -1,0 +1,54 @@
+label {
+    display: block;
+    margin: 1rem 0;
+}
+
+.card {
+    min-width: 42rem;
+}
+
+.card:hover {
+    transform: translateY(0px);
+}
+
+.form-item {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    font-size: 1rem;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 2rem;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+    min-height: 8rem;
+}
+
+select {
+    appearance: none;
+}
+
+button {
+    border-radius: 2rem;
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    transition: background 0.5s;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1.15rem;
+    border: 1px solid #ccc;
+}
+
+button:hover {
+    background-color: #2e7932;
+}

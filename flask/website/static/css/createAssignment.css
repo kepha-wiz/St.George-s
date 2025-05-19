@@ -1,0 +1,101 @@
+.card {
+  min-width: 42rem;
+}
+
+.card:hover {
+  transform: translateY(0px);
+}
+
+.assignment-form label {
+  display: block;
+  text-align: center;
+}
+
+.items {
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="file"],
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #CCC;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.assignment-type,
+.content-type {
+  margin-bottom: 15px;
+}
+
+.quiz-content,
+.essay-content,
+.file-upload-quiz,
+.file-upload-essay,
+.text-entry-quiz,
+.text-entry-essay {
+  display: none;
+}
+
+.assignment-form .visible {
+  display: block;
+}
+
+button {
+  border-radius: 2rem;
+  background-color: #3c3c3c;
+  color: white;
+  padding: 1rem 2rem;
+  transition: background 0.5s;
+  cursor: pointer;
+  margin-top: 20px;
+  font-size: 1.15rem;
+  border: 1px solid #ccc;
+}
+
+button:hover {
+  background-color: black;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background-color: #4CAF50;
+}
+
+button[type="submit"]:hover {
+  background-color: #2e7932;
+}
+
+.assignment-form .radio-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.mcq-option,
+.essay-max-grade {
+  margin-bottom: 5px;
+  text-align: left;
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mcq-option label,
+.essay-max-grade label {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.mcq-option input[type="text"],
+.mcq-option input[type="number"],
+.essay-max-grade input[type="number"] {
+  display: inline-block;
+  width: calc(100% - 40px);
+  vertical-align: middle;
+}

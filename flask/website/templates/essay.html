@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/assignment.css') }}">
+        <title>{{ essay.essay_name }}</title>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>{{ essay.essay_name }}</h1>
+            {% if already_submitted %}
+                <h4>You have already submitted this essay</h4>
+            {% else %}
+                <form
+                action="{{ url_for('views.submit_essay') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                onsubmit="return validateForm(event);">
+                    <!-- Hidden inputs for essay_id and student_id -->
+                    <input type="hidden" name="essay_id" value="{{ essay.id }}">
+                    <input type="hidden" name="student_id" value="{{ student_id }}">
+
+                    {% for question in questions %}
+                        <div>
+                            {% if question.question_type == 'file' %}
+                                <img src="data:image/jpeg;base64,{{ question.base64_image }}" alt="Question Image">
+                            {% else %}
+                                <!-- Display the question text if it's not a file type -->
+                                <p class="question-text">{{ question.question_text }}</p>
+                            {% endif %}
+                            {% if current_user.user_type not in ['admin', 'teacher'] %}
+                                <!-- Student response input options -->
+                                <div class="response-options">
+                                    <label>
+                                        <input type="radio" name="response_type{{ question.id }}" value="text" checked> Text Response
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="response_type{{ question.id }}" value="file"> File Upload
+                                    </label>
+                                </div>
+
+                                <!-- Text response input -->
+                                <div class="text-response">
+                                    <textarea name="text_answer{{ question.id }}" rows="4" cols="50"
+                                    placeholder="Enter your text response here"></textarea>
+                                </div>
+
+                                <!-- File response input -->
+                                <div class="file-response" style="display: none;">
+                                    <input type="file" id="file_answer{{ question.id }}" name="file_answer{{ question.id }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if current_user.user_type not in ['admin', 'teacher'] %}
+                        <input type="hidden" name="course_id" value="{{ course_id }}">
+                        <button type="submit" class="submit-quiz">Submit Answers</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </main>
+
+        <script>
+        // JavaScript to toggle between text and file inputs
+                $('.response-options input').on('change', function(event) {
+                var questionId = event.target.name.replace('response_type', '');
+                var parentQuestionDiv = event.target.closest('.question');
+                var textResponseDiv = parentQuestionDiv.find('.text-response');
+                var fileResponseDiv = parentQuestionDiv.find('.file-response');
+
+                if (event.target.value === 'text') {
+                    textResponseDiv.show();
+                    fileResponseDiv.hide();
+                }
+                else {
+                    textResponseDiv.hide();
+                    fileResponseDiv.show();
+                }
+            });
+
+            function validateForm(event) {
+                let isValid = true
+                $('.question').each(function() {
+                    const textResponse = $(this).find('.text-response textarea')
+                    const fileResponse = $(this).find('.file-response input[type="file"]')
+                    const responseOption = $(this).find('.response-options input[type="radio"]:checked').val()
+
+                    if (responseOption === 'text' && textResponse.val().trim() === '') {
+                        alert('Please enter a text response for all questions.');
+                        isValid = false;
+                    }
+                    else if (responseOption === 'file' && fileResponse.files.length === 0) {
+                        alert('Please upload a file for all file response questions.');
+                        isValid = false;
+                    }
+                });
+                return isValid;
+            }
+        </script>
+    </body>
+
+</html>

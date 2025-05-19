@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ course_name }} Discussions</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/discussion.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course.id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Discussions Forum</h1>
+            <h2>New Discussion</h2>
+            <section id="post-discussion" class="card">
+                <form method="POST" action="{{ url_for('views.add_discussion', course_id=course.id) }}">
+                    <h3>Discussion Title</h3>
+                    <input type="text" name="title" placeholder="Title" required>
+                    <h3>Content</h3>
+                    <textarea name="content" placeholder="What's on your mind?" required></textarea>
+                    <button type="submit">Post Discussion</button>
+                </form>
+            </section>
+
+            <h2>Discussions</h2>
+            <section>
+                {% for discussion in discussions %}
+                <a href="{{ url_for('views.discussion_detail', discussion_id=discussion.id, course_id=course_id) }}">
+                    <div class="section-content card options">
+                        <h3>{{ discussion.title }}</h3>
+                        <p>Posted on {{ discussion.date_posted }}</p>
+                    </div>
+                </a>
+                {% else %}
+                <p>No discussions yet. Be the first to start a conversation!</p>
+                {% endfor %}
+            </section>
+        </main>
+    </body>
+</html>

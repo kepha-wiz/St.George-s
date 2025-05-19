@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Accept Enrollment Requests</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/acceptCourse.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Accept Enrolment Requests</h1>
+            <div class="requestContainer">
+            {% for req in requests %}
+                {% if req.status == 'pending' %}
+                    <div class="card">
+                        <h3>Course Code: {{ req.course_code}}</h3>
+                        <p>Student <strong>{{ req.first_name }} {{ req.last_name }}</strong> (ID: {{ req.user_id }}) has
+                        requested to enroll in this course</p>
+                        <form method="POST" action="{{ url_for('views.acceptRequest') }}" class="req-action-form">
+                            <input type="hidden" name="course_id" value="{{ req.course_id }}">
+                            <input type="hidden" name="user_id" value="{{ req.user_id }}">
+                            <input type="submit" class="acceptButton" value="Accept">
+                        </form>
+                        <form method="POST" action="{{ url_for('views.declineRequest') }}" class="req-action-form">
+                            <input type="hidden" name="course_id" value="{{ req.course_id }}">
+                            <input type="hidden" name="user_id" value="{{ req.user_id }}">
+                            <input type="submit" class="declineButton" value="Decline">
+                        </form>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </main>
+
+        <div id="toastBox">
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                let toastBox = $('#toastBox')
+
+                function showToast(message) {
+                    let toast = $('<div></div>').addClass('toast').text(message)
+                    toastBox.append(toast)
+                    toast.addClass(message === "Request Declined" ? "decline" : "accept")
+
+                    setTimeout(function() {
+                    toast.remove()
+                    }, 2000)
+                }
+
+                $('.acceptButton').on('click', function (event) {
+                    event.preventDefault()
+                    showToast("Request Accepted")
+                    let form = $(this).closest('form')
+
+                    setTimeout(function() {
+                        if (form) form.submit()
+                    }, 2000)
+                })
+
+                $('.declineButton').on('click', function (event) {
+                    event.preventDefault()
+                    showToast("Request Declined")
+                    let form = $(this).closest('form')
+
+                    setTimeout(function() {
+                        if (form) form.submit()
+                    }, 2000)
+                })
+            })
+        </script>
+    </body>
+
+</html>

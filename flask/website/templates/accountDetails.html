@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/accountDetails.css') }}">
+</head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+        
+        <main>
+            <h1>Account Details</h1>
+            <div class="card">
+                <ul>
+                    <li>
+                        <span>Username:</span>{{ user.username }}
+                    </li>
+                    <li>
+                        <span>First Name:</span>{{ user.first_name }}</li>
+                    <li>
+                        <span>Last Name:</span>{{ user.last_name }}
+                    </li>
+                    <li>
+                        <span>DOB:</span>{{ user.DOB }}
+                    </li>
+                    <li>
+                        <span>Role:</span>{{ user.user_type }}
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </body>
+</html>

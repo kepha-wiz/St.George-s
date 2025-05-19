@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grade Quiz</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/gradeAssignment.css') }}">
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Grade Quiz</h1>
+            <div class="card">
+                <div class="assignment-details">
+                    <h3>Assignment Name: <span>{{ quiz.quiz_name }}</span></h3>
+                    <h3>Student: <span>{{ student.first_name }} {{ student.last_name }}</span></h3>
+                    <h3>Max Grade of Quiz: <span>{{ quiz.quiz_max_grade }}</span></h3>
+                </div>
+
+                <form name="grading"
+                    action="{{ url_for('views.grade_quiz', course_id=course_id, quiz_id=quiz.id, student_id=student.id) }}"
+                    method="POST">
+                    {% for submission in submissions %}
+                        <div class="question">
+                            <h4>{{ loop.index }}: {{ submission.question_text }}</h4>
+                            <input id="option1_{{ submission.id }}" type="radio" name="answer_{{ loop.index }}" disabled>
+                            <label for="option1_{{ submission.id }}">{{ submission.question_option1 }}</label><br>
+                            <input id="option2_{{ submission.id }}" type="radio" name="answer_{{ loop.index }}" disabled>
+                            <label for="option2_{{ submission.id }}">{{ submission.question_option2 }}</label><br>
+                            <input id="option3_{{ submission.id }}" type="radio" name="answer_{{ loop.index }}" disabled>
+                            <label for="option3_{{ submission.id }}">{{ submission.question_option3 }}</label><br>
+
+                            <h4>Student's Answer:</h4>
+                            <p>{{ submission.selected_option }}</p>
+
+                            <label for="grade_{{ submission.id }}">Grade Question:</label>
+                            <input type="number"
+                            name="grade_{{ submission.id }}"
+                            id="grade_{{ submission.id }}"
+                                placeholder="Grade out of {{ submission.max_grade }}"
+                                min="0"
+                                max="{{ submission.max_grade }}"
+                                required>
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit">Submit Grade</button>
+                </form>
+            </div>
+        </main>
+    </body>
+</html>

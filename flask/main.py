@@ -1,5 +1,4 @@
 from website import create_app
-from flask import app
 
 app = create_app()
 

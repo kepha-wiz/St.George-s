@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Create an Account</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/signup.css') }}">
+    </head>
+    <body>
+        <div class="container">
+            <h2>Create an Account</h2>
+            <form id="createAccountForm" method="post">
+                <!-- Username Field -->
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <!-- Password Field -->
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[\W]).{8,}"
+                        title="Password must contain at least one number, one uppercase letter, one lowercase letter, one special character, and at least 8 or more characters">
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div>
+                    <label for="confirmPassword">Confirm New Password:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required
+                        title="Must match the password entered above.">
+                </div>
+
+                <!-- First Name Field -->
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required>
+
+                <!-- Last Name Field -->
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required>
+
+                <!-- Date of Birth (DOB) Field -->
+                <label for="dob">Date of Birth (DOB):</label>
+                <input type="date" id="dob" name="dob" required title="You must be at least 18 years old.">
+                <br><br>
+<label for="student_level">Student Level</label>
+<select name="student_level" id="student_level" required>
+    <option value="">--Select Level--</option>
+    <option value="lower_secondary">Lower Secondary</option>
+    <option value="advanced">Advanced Level</option>
+</select>
+
+
+                <!-- User Type Selection -->
+                <fieldset>
+                    <legend>User Type:</legend>
+                    <label for="student">
+                        <input type="radio" id="student" name="user_type" value="student" required> Student
+                    </label>
+                    <br>
+                    <label for="teacher">
+                        <input type="radio" id="teacher" name="user_type" value="teacher"> Teacher
+                    </label>
+                    <br>
+                    <label for="admin">
+                        <input type="radio" id="admin" name="user_type" value="admin"> Admin
+                    </label>
+                </fieldset>
+                <br>
+
+                <!-- Submit Button -->
+                <input type="submit" id="create_account_button" value="Create Account">
+                <!-- Cancel Button -->
+                <input type="button" id="cancel_button" value="Cancel" onclick="cancelRegistration()">
+            </form>
+        </div>
+
+        <script>
+            function togglePasswordVisibility() {
+                var field = $('#password')
+                field.type(field.type() === "password" ? "text" : "password")
+            }
+
+            function cancelRegistration() {
+                // Redirect or perform other action when cancel button is clicked
+                window.location.href = "/login" // Replace "index.html" with the appropriate URL
+            }
+            // Function to add constraint to DOB field
+            var dob = $("#dob")
+            var selectedDate = new Date(this.value)
+            var cutoffDate = new Date()
+            cutoffDate.setFullYear(cutoffDate.getFullYear() - 17) // User must be at least 17 years old
+            dob.attr({ "max": cutoffDate.toISOString().split("T")[0] })
+            dob.on("input", function() {
+                if (selectedDate >= cutoffDate) {
+                    dob.setCustomValidity("You must be at least 17 years old.")
+                } else {
+                    dob.setCustomValidity("")
+                }
+            });
+
+            // Password and Confirm Password validation
+            var password = $("#password")
+            var confirmPassword = $("#confirmPassword")
+
+            function validatePasswords() {
+                if (password.val() !== confirmPassword.val()) {
+                    confirmPassword.setCustomValidity("Passwords do not match.");
+                } else {
+                    confirmPassword.setCustomValidity("")
+                }
+            }
+
+            password.on("input", validatePasswords)
+            confirmPassword.on("input", validatePasswords)
+
+            $("#createAccountForm").onsubmit = function () {
+                if (!this.checkValidity()) {
+                    return false
+                }
+                return true // Allow form submission
+            }
+        </script>
+
+        {% with messages = get_flashed_messages(category_filter=["error"]) %}
+            {% if messages %}
+                <script>
+                    alert("{{ messages[0] }}")
+                </script>
+            {% endif %}
+        {% endwith %}
+    </body>
+</html>

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Accept Enrollment Requests</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/acceptCourse.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.requestContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 0.5rem;
+    border-left: 5px solid #2563eb;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+    box-shadow: 0 6px 24px rgba(37,99,235,0.10);
+    transform: translateY(-2px) scale(1.01);
+}
+.req-action-form {
+    display: inline-block;
+    margin-right: 0.7rem;
+}
+.acceptButton, .declineButton {
+    padding: 0.5rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 1rem;
+    margin-top: 0.7rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.acceptButton {
+    background: #22c55e;
+    color: #fff;
+    margin-right: 0.5rem;
+}
+.acceptButton:hover {
+    background: #16a34a;
+}
+.declineButton {
+    background: #ef4444;
+    color: #fff;
+}
+.declineButton:hover {
+    background: #b91c1c;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+#toastBox {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+}
+.toast {
+    min-width: 180px;
+    margin-bottom: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    opacity: 0.95;
+    animation: fadeIn 0.3s;
+}
+.toast.accept {
+    background: #22c55e;
+}
+.toast.decline {
+    background: #ef4444;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px);}
+    to { opacity: 0.95; transform: translateY(0);}
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .card {
+        padding: 1rem 0.7rem;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+    #toastBox {
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+}
+</style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Accept Enrolment Requests</h1>
+            <div class="requestContainer">
+            {% for req in requests %}
+                {% if req.status == 'pending' %}
+                    <div class="card">
+                        <h3>Course Code: {{ req.course_code}}</h3>
+                        <p>Student <strong>{{ req.first_name }} {{ req.last_name }}</strong> (ID: {{ req.user_id }}) has
+                        requested to enroll in this course</p>
+                        <form method="POST" action="{{ url_for('views.acceptRequest') }}" class="req-action-form">
+                            <input type="hidden" name="course_id" value="{{ req.course_id }}">
+                            <input type="hidden" name="user_id" value="{{ req.user_id }}">
+                            <input type="submit" class="acceptButton" value="Accept">
+                        </form>
+                        <form method="POST" action="{{ url_for('views.declineRequest') }}" class="req-action-form">
+                            <input type="hidden" name="course_id" value="{{ req.course_id }}">
+                            <input type="hidden" name="user_id" value="{{ req.user_id }}">
+                            <input type="submit" class="declineButton" value="Decline">
+                        </form>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+        </main>
+
+        <div id="toastBox">
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                let toastBox = $('#toastBox')
+
+                function showToast(message) {
+                    let toast = $('<div></div>').addClass('toast').text(message)
+                    toastBox.append(toast)
+                    toast.addClass(message === "Request Declined" ? "decline" : "accept")
+
+                    setTimeout(function() {
+                    toast.remove()
+                    }, 2000)
+                }
+
+                $('.acceptButton').on('click', function (event) {
+                    event.preventDefault()
+                    showToast("Request Accepted")
+                    let form = $(this).closest('form')
+
+                    setTimeout(function() {
+                        if (form) form.submit()
+                    }, 2000)
+                })
+
+                $('.declineButton').on('click', function (event) {
+                    event.preventDefault()
+                    showToast("Request Declined")
+                    let form = $(this).closest('form')
+
+                    setTimeout(function() {
+                        if (form) form.submit()
+                    }, 2000)
+                })
+            })
+        </script>
+    </body>
+
+</html>

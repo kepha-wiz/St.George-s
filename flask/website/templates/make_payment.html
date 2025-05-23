@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/EnrollCourse.css') }}">
+    <style>
+        .payment-container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .payment-container h1 {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .payment-info {
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .pay-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .pay-btn:hover {
+            background-color: #004a99;
+        }
+
+        @media (max-width: 600px) {
+            .payment-container {
+                margin: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'sidebar.html' %}
+    <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+    <main>
+        <div class="payment-container">
+            <h1>Payment Required</h1>
+            <div class="payment-info">
+                <p>You must complete payment before you can enroll into any course.</p>
+                <p>Accepted Payment Methods: MTN Mobile Money, Airtel Money</p>
+            </div>
+            <form action="{{ url_for('views.process_payment') }}" method="POST">
+                <button type="submit" class="pay-btn">Make Payment</button>
+            </form>
+        </div>
+    </main>
+</body>
+</html>

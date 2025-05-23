@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Grade Essay</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/gradeAssignment.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.assignment-details h1 {
+    color: #2d3a4a;
+    margin-bottom: 1rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.assignment-details h3 {
+    color: #2563eb;
+    margin: 0.5rem 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+.question {
+    margin-bottom: 1.2rem;
+}
+.question h4 {
+    color: #3730a3;
+    margin-bottom: 0.5rem;
+    font-size: 1.08rem;
+}
+.question p {
+    color: #374151;
+    font-size: 1.05rem;
+    margin-bottom: 0.7rem;
+}
+embed {
+    border-radius: 8px;
+    background: #e0e7ff;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 2px 8px rgba(99,102,241,0.08);
+    width: 100%;
+    max-width: 100%;
+}
+label[for="essay-grade"] {
+    font-weight: 600;
+    color: #2563eb;
+    margin-top: 1rem;
+    display: block;
+}
+input[type="number"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    background: #fff;
+    transition: border 0.2s;
+}
+input[type="number"]:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+button[type="submit"] {
+    align-self: flex-end;
+    padding: 0.7rem 1.6rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+button[type="submit"]:hover {
+    background: #1e40af;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .card {
+        padding: 1rem 0.7rem;
+    }
+    .assignment-details h1 {
+        font-size: 1.3rem;
+    }
+    .assignment-details h3 {
+        font-size: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    .assignment-details h1 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+        
+        <main>
+            <div class="card">
+                <div class="assignment-details">
+                    <h1>Grade Essay</h1>
+                    <h3>Assignment Name: {{ essay.essay_name }}</h3>
+                    <h3>Student: {{ student.first_name }} {{ student.last_name }}</h3>
+                    <h3>Max Grade: {{ submission.max_grade }}</h3>
+                </div>
+
+                <form name="grading"
+                    action="{{ url_for('views.grade_essay', course_id=course_id, essay_id=essay.id, student_id=student.id) }}"
+                    method="POST">
+                    <div class="question">
+                        <h4>Essay Question:</h4>
+                        {% if question.question_type == 'file' %}
+                            <embed src="{{ question_data_uri }}" width="90%" height="300px">
+                        {% elif question.question_type == 'text' %}
+                            <p>{{ question.question_text }}</p>
+                        {% endif %}
+
+                        <h4>Student Answer:</h4>
+                        {% if submission.answer_type == 'text' %}
+                            <p>{{ submission.answer_text }}</p>
+                        {% elif submission.answer_type == 'file' %}
+                            <embed src="{{ answer_data_uri }}" width="90%" height="400px">
+                        {% endif %}
+                        <br>
+                        <label for="essay-grade">Grade Essay:</label>
+                        <input type="number" name="essay-grade" placeholder="Grade out of {{ submission.max_grade }}" min="0"
+                            max="{{ submission.max_grade }}" required>
+                    </div>
+
+                    <button type="submit">Submit Grade</button>
+                </form>
+            </div>
+        </main>
+    </body>
+</html>

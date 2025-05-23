@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ course.course_code }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/course.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sidebar.css') }}">
+<!-- Place this inside the <head> of course.html -->
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1, h2, h3, h4 {
+    color: #2d3a4a;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+a {
+    color: #2563eb;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #1e40af;
+    text-decoration: underline;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.info-box p {
+    margin: 0.5rem 0;
+}
+.live-stream {
+    border-left: 5px solid #22c55e;
+    background: #e7fbe9;
+}
+.section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+.card.assignments {
+    flex: 1 1 220px;
+    min-width: 220px;
+    max-width: 320px;
+    margin: 0.5rem 0;
+    background: #f1f5f9;
+    border-left: 4px solid #2563eb;
+    transition: box-shadow 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+.card.assignments:hover {
+    box-shadow: 0 6px 24px rgba(37,99,235,0.10);
+    transform: translateY(-2px) scale(1.02);
+}
+.card.options {
+    background: #e0e7ff;
+    border-left: 4px solid #6366f1;
+    margin-bottom: 0.7rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.card.options:hover {
+    box-shadow: 0 6px 24px rgba(99,102,241,0.10);
+    transform: translateY(-2px) scale(1.02);
+}
+ul {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0;
+}
+li {
+    margin-bottom: 0.3rem;
+}
+.sub-assignments {
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.2rem;
+    background: #f3f4f6;
+    border-radius: 10px;
+}
+.sub-assignments h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+.sub-assignments a {
+    display: inline-block;
+    margin: 0.2rem 0.5rem 0.2rem 0;
+    padding: 0.2rem 0.7rem;
+    background: #fef9c3;
+    color: #b45309;
+    border-radius: 5px;
+    font-size: 0.98rem;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+.sub-assignments a:hover {
+    background: #fde68a;
+}
+.sub-assignments span {
+    display: inline-block;
+    margin: 0.2rem 0.5rem 0.2rem 0;
+    color: #16a34a;
+    font-size: 0.98rem;
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .section-content {
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .card.assignments, .card.options {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+    }
+    .info-box, .live-stream, .sub-assignments {
+        padding: 0.7rem 1rem;
+    }
+    h1 {
+        font-size: 1.5rem;
+    }
+    h2 {
+        font-size: 1.15rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+</head>
+
+<body>
+    {% include 'sidebar.html' %}
+    <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+    <main>
+        <h1>{{ course.course_code }}: {{ course.course_name }}</h1>
+
+        {% if live_lesson %}
+        <h2>Live Lesson</h2>
+        <div class="card live-stream">
+            <p><strong>Live Now:</strong></p>
+            <iframe src="{{ live_lesson.stream_url }}"
+        width="100%" height="500"
+        frameborder="0"
+        allow="autoplay; encrypted-media"
+        allowfullscreen>
+</iframe>
+        </div>
+        {% endif %}
+
+        <div class="card info-box">
+            <p><strong>Description:</strong> {{ course.course_desc }}</p>
+            <p><strong>Registration Limit:</strong> {{ course.course_limit }}</p>
+            <p><strong>Instructor:</strong> {{ teacher.first_name }} {{ teacher.last_name }}</p>
+            <p><strong>Instructor ID:</strong> {{ course.teacher_id }}</p>
+        </div>
+
+        <h2>Resources</h2>
+        {% if course.resources or course.resource_link %}
+        <div class="section-content">
+            {% if course.resources %}
+            <p><strong>Files:</strong></p>
+            <ul>
+                {% for file in course.resources.split(',') %}
+                <li>
+                    <a href="{{ url_for('static', filename='uploads/' ~ file.strip()) }}" target="_blank">
+                        {{ file.strip() }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% if course.resource_link %}
+            <p><strong>Links:</strong></p>
+            <ul>
+                {% for link in course.resource_link.split(',') %}
+                <li>
+                    <a href="{{ link.strip() }}" target="_blank">{{ link.strip() }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No resources uploaded for this course.</p>
+        {% endif %}
+
+        <h2>Quizzes</h2>
+        {% if quizzes %}
+        <div class="section-content">
+            {% for quiz in quizzes %}
+            <a href="{{ url_for('views.quiz_page', course_id=course.id, quiz_id=quiz.id) }}" class="card assignments">
+                <h3>{{ quiz.quiz_name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        {% if current_user.user_type == 'teacher' %}
+        <p>There are no quizzes created yet in this course. Create one by clicking the Create assignment button below.</p>
+        {% else %}
+        <p>There are no quizzes created yet in this course.</p>
+        {% endif %}
+        {% endif %}
+
+        <h2>Essays</h2>
+        {% if essays %}
+        <div class="section-content">
+            {% for essay in essays %}
+            <a href="{{ url_for('views.essay_page', course_id=course.id, essay_id=essay.id) }}" class="card assignments">
+                <h3>{{ essay.essay_name }}</h3>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        {% if current_user.user_type == 'teacher' %}
+        <p>There are no essays created yet in this course. Create one by clicking the Create assignment button below.</p>
+        {% else %}
+        <p>There are no essays created yet in this course.</p>
+        {% endif %}
+        {% endif %}
+
+        {% if current_user.user_type == 'teacher' %}
+        <h2>Grade Assignments</h2>
+        {% if essays or quizzes %}
+        <div class="sub-assignments">
+            {% if quizzes %}
+            <h3>Quizzes</h3>
+            {% for quiz in quizzes %}
+            <h4>{{ quiz.quiz_name }}</h4>
+            {% if not quiz_submissions[quiz.id] %}
+            <p>No submissions to grade</p>
+            {% endif %}
+            <div>
+                {% for student_id, info in quiz_submissions[quiz.id].items() %}
+                {% if not info.graded %}
+                <a href="{{ url_for('views.grade_quiz', course_id=course.id, quiz_id=quiz.id, student_id=student_id) }}">
+                    Grade: {{ info.student_name }}
+                </a>
+                {% else %}
+                <span>• {{ info.student_name }}: Graded</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <div class="sub-assignments">
+            {% if essays %}
+            <h3>Essays</h3>
+            {% for essay in essays %}
+            <h4>{{ essay.essay_name }}</h4>
+            <div>
+                {% if not essay_submissions[essay.id] %}
+                <p>No submissions to grade</p>
+                {% endif %}
+                {% for student_id, info in essay_submissions[essay.id].items() %}
+                {% if not info.graded %}
+                <a href="{{ url_for('views.grade_essay', course_id=course.id, essay_id=essay.id, student_id=student_id) }}">
+                    Grade: {{ info.student_name }}
+                </a>
+                {% else %}
+                <span>• {{ info.student_name }}: Graded</span>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+        {% else %}
+        <p>There are no assignments created yet in this course. Create one by clicking the Create assignment button below.</p>
+        {% endif %}
+        {% endif %}
+
+        <div class="section-content">
+            <a href="{{ url_for('views.course_discussions', course_id=course.id) }}">
+                <h3 class="card options">View Discussions</h3>
+            </a>
+            {% if current_user.user_type == 'student' %}
+            <a href="{{ url_for('views.grade_page', course_id=course.id) }}">
+                <h3 class="card options">View Your Grades</h3>
+            </a>
+            {% endif %}
+            {% if current_user.user_type == 'teacher' %}
+            <a href="{{ url_for('views.createAssignment', course_id=course.id) }}">
+                <h3 class="card options">Create Assignment</h3>
+            </a>
+            {% endif %}
+        </div>
+    </main>
+</body>
+
+</html>

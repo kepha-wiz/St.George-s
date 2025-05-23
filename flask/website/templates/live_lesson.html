@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ lesson.title }} - Live Lesson</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main.content {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 1.5rem 0;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    padding-top: 25px;
+    height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    background: #000;
+}
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    border-radius: 12px;
+}
+@media (max-width: 700px) {
+    main.content {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+    .back-button {
+        margin: 0.7rem 0 1rem 0;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+}
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.1rem;
+    }
+    .video-container {
+        padding-top: 10px;
+    }
+}
+</style>
+</head>
+<body>
+    {% include 'sidebar.html' %}
+    <main class="content">
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+        <h1>{{ lesson.title }}</h1>
+        <div class="video-container">
+            <iframe src="{{ lesson.stream_url }}" allowfullscreen></iframe>
+        </div>
+    </main>
+</body>
+</html>

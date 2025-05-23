@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ discussion.title }}</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/discussion.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.2rem;
+    font-size: 2rem;
+    text-align: center;
+}
+h2 {
+    color: #3730a3;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+#discussion-card {
+    margin-bottom: 2rem;
+}
+.discussion-description {
+    color: #2563eb;
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+}
+.posted-by {
+    color: #64748b;
+    font-size: 0.98rem;
+    margin-top: 0.3rem;
+}
+.reply-div {
+    background: #e0e7ff;
+    border-left: 4px solid #6366f1;
+    margin-bottom: 1rem;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.reply-div:hover {
+    box-shadow: 0 6px 24px rgba(99,102,241,0.10);
+    transform: translateY(-2px) scale(1.01);
+}
+.reply {
+    color: #222;
+    font-size: 1.05rem;
+    margin-bottom: 0.3rem;
+}
+#comment-box {
+    margin-top: 1.5rem;
+}
+.reply-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+.reply-form textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    transition: border 0.2s;
+    min-height: 70px;
+    resize: vertical;
+}
+.reply-form textarea:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+.submit-reply {
+    align-self: flex-end;
+    padding: 0.6rem 1.4rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+.submit-reply:hover {
+    background: #1e40af;
+}
+a {
+    text-decoration: none;
+    color: inherit;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .card, .reply-div {
+        padding: 1rem 0.7rem;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+    h2 {
+        font-size: 1.1rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_discussions', course_id=course_id) }}" class="back-button">Back</a>
+        
+        <main>
+            <h1>{{ discussion.title }}</h1>
+            <section class="card" id="discussion-card">
+                <h3 class="discussion-description">Description: {{ discussion.content }}</h3>
+                <p class="posted-by">Posted by {{ discussion_author }} on {{ discussion.date_posted }}</p>
+            </section>
+            <section>
+                <h2>Replies</h2>
+                <div>
+                    {% for reply, username in replies %}
+                    <div class="card options reply-div">
+                        <p class="reply">{{ reply.content }}</p>
+                        <p>{{ username }}, {{ reply.date_posted }}</p>
+                    </div>
+                    {% else %}
+                    <p>No replies yet. Be the first to reply!</p>
+                    {% endfor %}
+                </div>
+                <div id="comment-box">
+                    <form class="reply-form" method="POST" action="{{ url_for('views.submit_reply', discussion_id=discussion.id, course_id=course_id) }}">
+                        <textarea name="reply_content" placeholder="Write your reply here" required></textarea>
+                        <button type="submit" class="submit-reply">Post Reply</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+
+        <script>
+            function addComment() {
+                var comment = $("#comment").value
+                var commentsContainer = $("#comments-container")
+
+                // Append a new comment
+                var commentContainer = $("<div></div>").addClass("comment-container")
+                var newComment = $("<p></p>").text(comment)
+                commentContainer.append(newComment);
+                commentsContainer.append(commentContainer);
+
+                // Clear the textarea
+                $("#comment").val("");
+            }
+        </script>
+    </body>
+</html>
+

@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Enrollment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/EnrollCourse.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+h2 {
+    color: #2563eb;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+}
+.section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    min-width: 260px;
+    max-width: 350px;
+    flex: 1 1 300px;
+    margin-bottom: 0.5rem;
+    border-left: 5px solid #2563eb;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover {
+    box-shadow: 0 6px 24px rgba(37,99,235,0.10);
+    transform: translateY(-2px) scale(1.01);
+}
+.card.rejected {
+    border-left: 5px solid #ef4444;
+    background: #fef2f2;
+}
+.enrollButton {
+    display: inline-block;
+    margin-top: 0.7rem;
+    padding: 0.5rem 1.2rem;
+    background: #22c55e;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.enrollButton:hover {
+    background: #16a34a;
+}
+.enrollButton.disabled, .enrollButton.disabled:hover {
+    background: #d1d5db;
+    color: #888;
+    cursor: not-allowed;
+}
+.text-danger {
+    color: #ef4444;
+    font-weight: 600;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+#toastBox {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 9999;
+}
+.toast {
+    min-width: 180px;
+    margin-bottom: 0.7rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    color: #fff;
+    font-weight: 500;
+    background: #22c55e;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    opacity: 0.95;
+    animation: fadeIn 0.3s;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px);}
+    to { opacity: 0.95; transform: translateY(0);}
+}
+@media (max-width: 900px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .section-content {
+        flex-direction: column;
+        gap: 0.7rem;
+    }
+    .card {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+    h2 {
+        font-size: 1.1rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+    #toastBox {
+        right: 0.5rem;
+        top: 0.5rem;
+    }
+}
+</style>
+</head>
+<body>
+    {% include 'sidebar.html' %}
+    <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+
+    <main>
+        <h1>Enroll Into Courses</h1>
+        <section class="section-content">
+            <h2>Available Courses</h2>
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="card">
+                        <h3>{{ course.course_code }}: {{ course.course_name }}</h3>
+                        <p>{{ course.course_desc }}</p>
+                        <p><strong>Instructor:</strong> {{ course.first_name }} {{ course.last_name }}</p>
+                        <p><strong>Total Students:</strong> {{ course.course_limit }}</p>
+
+                        {% if user.user_type == 'student' and not user.has_paid %}
+                            <p class="text-danger"><strong>Payment required to enroll</strong></p>
+                            <a href="{{ url_for('views.make_payment') }}" class="enrollButton disabled">Pay Now</a>
+                        {% else %}
+                            <form method="POST" action="{{ url_for('views.createRequest') }}">
+                                <input type="hidden" name="course_id" value="{{ course.id }}">
+                                <input type="hidden" name="user_id" value="{{ user.id }}">
+                                <input type="submit" class="enrollButton" id="request_enroll_button" value="Request to Enroll">
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <h4>No Available Courses</h4>
+            {% endif %}
+        </section>
+
+        <h2>Rejected Enrollment Requests</h2>
+        <section class="section-content">
+            {% for course in rejected %}
+                <div class="card rejected">
+                    <h3>{{ course.course_code }}: {{ course.course_name }}</h3>
+                    <p>{{ course.course_desc }}</p>
+                    <p><strong>Instructor:</strong> {{ course.first_name }} {{ course.last_name }}</p>
+                    <p><strong>Total Students:</strong> {{ course.course_limit }}</p>
+                </div>
+            {% endfor %}
+        </section>
+    </main>
+
+    <div id="toastBox"></div>
+    <script>
+        $(document).ready(function () {
+            let toastBox = $('#toastBox');
+
+            function showToast() {
+                let toast = $('<div></div>')
+                    .addClass('toast')
+                    .text("Enrollment Request Sent");
+                toastBox.append(toast);
+
+                setTimeout(function () {
+                    toast.remove();
+                }, 2000);
+            }
+
+            $('.enrollButton:not(.disabled)').on('click', function (event) {
+                event.preventDefault();
+                showToast();
+                let form = this.closest('form');
+                setTimeout(function () {
+                    if (form) form.submit();
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

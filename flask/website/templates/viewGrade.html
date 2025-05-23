@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Course Grades</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <style>
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                background: #f6f8fa;
+                margin: 0;
+                padding: 0;
+                color: #222;
+            }
+            main {
+                max-width: 600px;
+                margin: 2rem auto;
+                padding: 1.5rem;
+                background: #fff;
+                border-radius: 18px;
+                box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+            }
+            h1 {
+                color: #2d3a4a;
+                margin-bottom: 1.5rem;
+                font-size: 2rem;
+                text-align: center;
+            }
+            .card {
+                background: #f9fafb;
+                border-radius: 12px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                padding: 1.2rem 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            h3 {
+                color: #2563eb;
+                margin-top: 1.2rem;
+                margin-bottom: 0.7rem;
+                font-size: 1.15rem;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 1.2rem;
+                background: #fff;
+            }
+            th, td {
+                padding: 0.8rem 0.5rem;
+                text-align: left;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 1.05rem;
+            }
+            th {
+                background: #e0e7ff;
+                color: #3730a3;
+                font-weight: 600;
+            }
+            tr:last-child td {
+                border-bottom: none;
+            }
+            .back-button {
+                display: inline-block;
+                margin: 1rem 0 0 1rem;
+                padding: 0.5rem 1.2rem;
+                background: #2563eb;
+                color: #fff;
+                border-radius: 6px;
+                font-weight: 500;
+                box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+                transition: background 0.2s;
+                text-decoration: none;
+            }
+            .back-button:hover {
+                background: #1e40af;
+            }
+            @media (max-width: 700px) {
+                main {
+                    max-width: 98vw;
+                    padding: 0.7rem;
+                    border-radius: 0;
+                    box-shadow: none;
+                }
+                .card {
+                    padding: 1rem 0.7rem;
+                }
+                h1 {
+                    font-size: 1.3rem;
+                }
+                h3 {
+                    font-size: 1rem;
+                }
+                th, td {
+                    font-size: 0.97rem;
+                    padding: 0.6rem 0.3rem;
+                }
+            }
+            @media (max-width: 480px) {
+                body {
+                    font-size: 0.97rem;
+                }
+                .back-button {
+                    margin: 0.5rem 0 0 0.5rem;
+                    padding: 0.4rem 0.8rem;
+                    font-size: 0.97rem;
+                }
+                h1 {
+                    font-size: 1.1rem;
+                }
+                table, thead, tbody, th, td, tr {
+                    display: block;
+                    width: 100%;
+                }
+                thead {
+                    display: none;
+                }
+                tr {
+                    margin-bottom: 1rem;
+                    border-bottom: 2px solid #e5e7eb;
+                }
+                td {
+                    padding: 0.5rem 0.2rem;
+                    position: relative;
+                }
+                td:before {
+                    content: attr(data-label);
+                    font-weight: 600;
+                    color: #2563eb;
+                    display: block;
+                    margin-bottom: 0.2rem;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>Your Grades</h1>
+            <section class="card">
+                <h3>Quizzes</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quiz</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for quiz in quizzes %}
+                        <tr>
+                            <td data-label="Quiz">{{ quiz.quiz_name }}</td>
+                            <td data-label="Grade">{{ quiz_grades[quiz.id] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <h3>Essays</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Essay</th>
+                            <th>Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for essay in essays %}
+                        <tr>
+                            <td data-label="Essay">{{ essay.essay_name }}</td>
+                            <td data-label="Grade">{{ essay_grades[essay.id] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </body>
+</html>

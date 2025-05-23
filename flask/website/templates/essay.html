@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/assignment.css') }}">
+        <title>{{ essay.essay_name }}</title>
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 700px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+h4 {
+    color: #16a34a;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.question-text {
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 0.7rem;
+}
+img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 0.7rem;
+    display: block;
+}
+.response-options {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.7rem;
+}
+.response-options label {
+    font-weight: 500;
+    color: #374151;
+}
+.text-response textarea {
+    width: 100%;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #fff;
+    transition: border 0.2s;
+    min-height: 70px;
+    resize: vertical;
+}
+.text-response textarea:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+.file-response input[type="file"] {
+    margin-top: 0.5rem;
+}
+button[type="submit"] {
+    align-self: flex-end;
+    padding: 0.7rem 1.6rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+button[type="submit"]:hover {
+    background: #1e40af;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+    form {
+        gap: 1rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+
+        <main>
+            <h1>{{ essay.essay_name }}</h1>
+            {% if already_submitted %}
+                <h4>You have already submitted this essay</h4>
+            {% else %}
+                <form
+                action="{{ url_for('views.submit_essay') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                onsubmit="return validateForm(event);">
+                    <!-- Hidden inputs for essay_id and student_id -->
+                    <input type="hidden" name="essay_id" value="{{ essay.id }}">
+                    <input type="hidden" name="student_id" value="{{ student_id }}">
+
+                    {% for question in questions %}
+                        <div>
+                            {% if question.question_type == 'file' %}
+                                <img src="data:image/jpeg;base64,{{ question.base64_image }}" alt="Question Image">
+                            {% else %}
+                                <!-- Display the question text if it's not a file type -->
+                                <p class="question-text">{{ question.question_text }}</p>
+                            {% endif %}
+                            {% if current_user.user_type not in ['admin', 'teacher'] %}
+                                <!-- Student response input options -->
+                                <div class="response-options">
+                                    <label>
+                                        <input type="radio" name="response_type{{ question.id }}" value="text" checked> Text Response
+                                    </label>
+                                    <label>
+                                        <input type="radio" name="response_type{{ question.id }}" value="file"> File Upload
+                                    </label>
+                                </div>
+
+                                <!-- Text response input -->
+                                <div class="text-response">
+                                    <textarea name="text_answer{{ question.id }}" rows="4" cols="50"
+                                    placeholder="Enter your text response here"></textarea>
+                                </div>
+
+                                <!-- File response input -->
+                                <div class="file-response" style="display: none;">
+                                    <input type="file" id="file_answer{{ question.id }}" name="file_answer{{ question.id }}">
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    {% if current_user.user_type not in ['admin', 'teacher'] %}
+                        <input type="hidden" name="course_id" value="{{ course_id }}">
+                        <button type="submit" class="submit-quiz">Submit Answers</button>
+                    {% endif %}
+                </form>
+            {% endif %}
+        </main>
+
+        <script>
+        // JavaScript to toggle between text and file inputs
+                $('.response-options input').on('change', function(event) {
+                var questionId = event.target.name.replace('response_type', '');
+                var parentQuestionDiv = event.target.closest('.question');
+                var textResponseDiv = parentQuestionDiv.find('.text-response');
+                var fileResponseDiv = parentQuestionDiv.find('.file-response');
+
+                if (event.target.value === 'text') {
+                    textResponseDiv.show();
+                    fileResponseDiv.hide();
+                }
+                else {
+                    textResponseDiv.hide();
+                    fileResponseDiv.show();
+                }
+            });
+
+            function validateForm(event) {
+                let isValid = true
+                $('.question').each(function() {
+                    const textResponse = $(this).find('.text-response textarea')
+                    const fileResponse = $(this).find('.file-response input[type="file"]')
+                    const responseOption = $(this).find('.response-options input[type="radio"]:checked').val()
+
+                    if (responseOption === 'text' && textResponse.val().trim() === '') {
+                        alert('Please enter a text response for all questions.');
+                        isValid = false;
+                    }
+                    else if (responseOption === 'file' && fileResponse.files.length === 0) {
+                        alert('Please upload a file for all file response questions.');
+                        isValid = false;
+                    }
+                });
+                return isValid;
+            }
+        </script>
+    </body>
+
+</html>

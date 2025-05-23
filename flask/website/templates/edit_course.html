@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Course</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 0.2rem 0.8rem rgba(0,0,0,0.08);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.edit-course-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.form-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.form-item label {
+    font-weight: 600;
+    color: #2563eb;
+}
+.form-item input,
+.form-item textarea {
+    padding: 0.7rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1.08rem;
+    width: 100%;
+    box-sizing: border-box;
+    background: #f9fafb;
+    transition: border 0.2s;
+}
+.form-item input:focus,
+.form-item textarea:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+.form-item textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+.edit-btn, .delete-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, box-shadow 0.2s;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+.edit-btn {
+    background: #2563eb;
+}
+.delete-btn {
+    background: #dc3545;
+}
+.edit-btn:hover {
+    background: #1e40af;
+}
+.delete-btn:hover {
+    background: #a71d2a;
+}
+@media (max-width: 600px) {
+    main {
+        padding: 1rem;
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 98vw;
+    }
+    .edit-course-form {
+        gap: 1rem;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+}
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.1rem;
+    }
+    .edit-btn, .delete-btn {
+        font-size: 0.97rem;
+        padding: 0.5rem 1rem;
+    }
+}
+</style>
+</head>
+<body>
+    {% include 'sidebar.html' %}
+    <main>
+        <h1>Edit Course</h1>
+        <form method="POST" class="edit-course-form">
+            <div class="form-item">
+                <label for="course_name">Course Name:</label>
+                <input type="text" id="course_name" name="course_name" value="{{ course.course_name }}" required>
+            </div>
+            <div class="form-item">
+                <label for="course_code">Course Code:</label>
+                <input type="text" id="course_code" name="course_code" value="{{ course.course_code }}" required>
+            </div>
+            <div class="form-item">
+                <label for="course_desc">Description:</label>
+                <textarea id="course_desc" name="course_desc" required>{{ course.course_desc }}</textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="edit-btn">Save Changes</button>
+                <a href="{{ url_for('views.home') }}" class="delete-btn" style="text-decoration:none;">Cancel</a>
+            </div>
+        </form>
+    </main>
+    <style>
+        main {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 0.2rem 0.8rem rgba(0,0,0,0.08);
+        }
+        .edit-course-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .form-item label {
+            font-weight: bold;
+            color: #1f3579;
+        }
+        .form-item input,
+        .form-item textarea {
+            padding: 0.7rem 1rem;
+            border: 1px solid #ccc;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .form-item textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .edit-btn, .delete-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s;
+            display: inline-block;
+        }
+        .edit-btn {
+            background: #007bff;
+        }
+        .delete-btn {
+            background: #dc3545;
+        }
+        .edit-btn:hover {
+            background: #0056b3;
+        }
+        .delete-btn:hover {
+            background: #a71d2a;
+        }
+        @media (max-width: 600px) {
+            main {
+                padding: 1rem;
+            }
+            .edit-course-form {
+                gap: 1rem;
+            }
+        }
+    </style>
+</body>
+</html>

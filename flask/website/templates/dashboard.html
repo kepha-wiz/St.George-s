@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>St.George Biology Class</title>
+    <style>
+        :root {
+            --sidebar-width: 220px;
+            --primary: #2d3a4b;
+            --accent: #4f8cff;
+            --background: #f7f9fb;
+            --card-bg: #fff;
+            --border-radius: 14px;
+            --shadow: 0 2px 12px rgba(44,62,80,0.07);
+            --text: #222;
+            --muted: #888;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: #fff;
+            padding: 32px 0 0 0;
+            box-shadow: 2px 0 12px rgba(44,62,80,0.07);
+            z-index: 100;
+            transition: width 0.3s;
+            overflow-x: hidden;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar img {
+            display: block;
+            margin: 0 auto 32px auto;
+            width: 48px;
+            height: 48px;
+            transition: width 0.3s, height 0.3s;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul a {
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 14px 32px;
+            border-radius: 0 24px 24px 0;
+            transition: background 0.2s, padding 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar ul a:hover, .sidebar ul a:focus {
+            background: var(--accent);
+        }
+        .sidebar ul a li {
+            transition: opacity 0.3s, margin 0.3s;
+            opacity: 1;
+            margin-left: 12px;
+        }
+        .sidebar.collapsed ul a {
+            padding: 14px 16px;
+            justify-content: center;
+        }
+        .sidebar.collapsed ul a li {
+            opacity: 0;
+            margin-left: 0;
+            pointer-events: none;
+        }
+        #sidebar-toggle {
+            position: fixed;
+            top: 18px;
+            left: calc(var(--sidebar-width) + 8px);
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 110;
+            box-shadow: var(--shadow);
+            transition: left 0.3s;
+        }
+        .sidebar.collapsed ~ #sidebar-toggle {
+            left: 68px;
+        }
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 32px 16px 32px 16px;
+            max-width: 700px;
+            margin-right: auto;
+            margin-top: 0;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed ~ main {
+            margin-left: 60px;
+        }
+        .back-button {
+            display: inline-block;
+            margin: 24px 0 0 0;
+            padding: 8px 20px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            transition: background 0.2s;
+        }
+        .back-button:hover, .back-button:focus {
+            background: #356ad8;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 24px;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        .quiz-form {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 32px 20px;
+            margin-top: 16px;
+        }
+        .question {
+            margin-bottom: 32px;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        .options label {
+            display: block;
+            background: #f0f4fa;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1rem;
+        }
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--accent);
+        }
+        .options label:hover, .options label:focus-within {
+            background: #e3edff;
+        }
+        .submit-quiz {
+            display: block;
+            width: 100%;
+            padding: 14px 0;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: background 0.2s;
+        }
+        .submit-quiz:hover, .submit-quiz:focus {
+            background: #356ad8;
+        }
+        h4 {
+            color: var(--muted);
+            text-align: center;
+            margin: 32px 0;
+        }
+        @media (max-width: 900px) {
+            main {
+                max-width: 98vw;
+                padding: 18px 4vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .sidebar {
+                position: fixed;
+                width: 100vw;
+                height: 56px;
+                left: 0; top: 0; bottom: auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0 8px;
+                box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+                transition: height 0.3s, width 0.3s;
+            }
+            .sidebar img {
+                width: 36px;
+                height: 36px;
+                margin: 0 12px 0 0;
+            }
+            .sidebar ul {
+                display: flex;
+                flex-direction: row;
+                gap: 8px;
+                margin-left: 12px;
+            }
+            .sidebar ul a {
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 0.98rem;
+            }
+            .sidebar ul a li {
+                margin-left: 6px;
+            }
+            .sidebar.collapsed ul a li {
+                opacity: 0;
+                margin-left: 0;
+            }
+            #sidebar-toggle {
+                top: 64px;
+                left: 12px;
+            }
+            main {
+                margin-left: 0;
+                margin-top: 72px;
+                padding: 12px 2vw;
+            }
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('views.home') }}">
+            <img src="{{ url_for('static', filename='blacklogo.svg') }}" alt="logo">
+        </a>
+        <ul>
+            <a href="{{ url_for('views.home') }}"><li>Dashboard</li></a>
+            <a href="{{ url_for('views.account_details') }}"><li>My Profile</li></a>
+            <a href="{{ url_for('views.edit_details') }}"><li>Settings</li></a>
+            <a href="{{ url_for('auth.logout') }}" id="logout"><li>Logout</li></a>
+        </ul>
+    </div>
+    <button id="sidebar-toggle" aria-label="Toggle sidebar">
+        <span id="arrow">&#9776;</span>
+    </button>
+    <main>
+        <h1>Your Dashboard</h1>
+        {% if current_user.user_type not in ['admin'] %}
+        <section>
+            {% if current_user.user_type in ['student'] %}
+            <h2>Enrolled Courses</h2>
+            {% endif %}
+            {% if current_user.user_type in ['teacher'] %}
+            <h2>Instructor for Courses</h2>
+            {% endif %}
+            <div class="section-content">
+                {% for course in enrolled_courses %}
+                <a href="{{ url_for('views.course_page', course_id=course.id) }}">
+                    <div class="card">
+                        <h3 class="course-code">{{ course.course_code }}</h3>
+                        <h3>{{ course.course_name }}</h3>
+                        <p>{{ course.course_desc }}</p>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+        </section>
+
+        {% if current_user.user_type in ['admin'] %}
+        <!-- All Courses Section -->
+        <section>
+            <h2>Created Courses</h2>
+            <div class="section-content">
+                {% for course in all_courses %}
+                <div class="card">
+                    <a href="{{ url_for('views.course_page', course_id=course.id) }}">
+                        <h3 class="course-code">{{ course.course_code }}</h3>
+                        <h3>{{ course.course_name }}</h3>
+                        <p>{{ course.course_desc }}</p>
+                    </a>
+                    <div class="admin-actions">
+                        <a href="{{ url_for('views.edit_course', course_id=course.id) }}" class="edit-btn">Edit</a>
+                        <a href="{{ url_for('views.delete_course', course_id=course.id) }}" class="delete-btn" onclick="return confirm('Are you sure you want to delete this course?');">Delete</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Other Cards Section -->
+        <section>
+            <h2>Other Options</h2>
+            <div class="section-content">
+                <a href="{{ url_for('views.account_details') }}">
+                    <h3 class="card options">Your Account Details</h3>
+                </a>
+                {% if current_user.user_type in ['student'] %}
+                <a href="{{ url_for('views.display_courses') }}">
+                    <h3 id="enroll_course_link" class="card options">Enroll in a New Course</h3>
+                </a>
+                {% endif %}
+                {% if current_user.user_type in ['admin'] %}
+                <a href="{{ url_for('views.createCourse') }}">
+                    <h3 id="create_course_link" class="card options">Create a New Course</h3>
+                </a>
+                <a href="{{ url_for('views.display_requests') }}">
+                    <h3 class="card options">Manage Student Enrollment Requests</h3>
+                </a>
+                {% endif %}
+                <a href="{{ url_for('views.edit_details') }}">
+                    <h3 class="card options">Account Settings</h3>
+                </a>
+                <a href="{{ url_for('auth.logout') }}" id="logout">
+                    <h3 class="card options">Logout</h3>
+                </a>
+            </div>
+        </section>
+    </main>
+    <script>
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const arrow = document.getElementById('arrow');
+        toggleBtn.onclick = function() {
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                arrow.innerHTML = '&#9654;';
+            } else {
+                arrow.innerHTML = '&#9776;';
+            }
+        };
+
+        // Colorful course codes
+        $(document).ready(function() {
+            const courseCodes = $(".course-code");
+            const colors = ["#dc3545", "#28a745", "#007bff", "#ffc107", "#17a2b8"];
+            for (let i = 0; i < courseCodes.length; i++) {
+                $(courseCodes[i]).css('backgroundColor', colors[i % colors.length]);
+            }
+        });
+    </script>
+    <style>
+        :root {
+            --sidebar-width: 220px;
+            --primary: #2d3a4b;
+            --accent: #4f8cff;
+            --background: #f7f9fb;
+            --card-bg: #fff;
+            --border-radius: 14px;
+            --shadow: 0 2px 12px rgba(44,62,80,0.07);
+            --text: #222;
+            --muted: #888;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: #fff;
+            padding: 32px 0 0 0;
+            box-shadow: 2px 0 12px rgba(44,62,80,0.07);
+            z-index: 100;
+            transition: width 0.3s;
+            overflow-x: hidden;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar img {
+            display: block;
+            margin: 0 auto 32px auto;
+            width: 48px;
+            height: 48px;
+            transition: width 0.3s, height 0.3s;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul a {
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 14px 32px;
+            border-radius: 0 24px 24px 0;
+            transition: background 0.2s, padding 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar ul a:hover, .sidebar ul a:focus {
+            background: var(--accent);
+        }
+        .sidebar ul a li {
+            transition: opacity 0.3s, margin 0.3s;
+            opacity: 1;
+            margin-left: 12px;
+        }
+        .sidebar.collapsed ul a {
+            padding: 14px 16px;
+            justify-content: center;
+        }
+        .sidebar.collapsed ul a li {
+            opacity: 0;
+            margin-left: 0;
+            pointer-events: none;
+        }
+        #sidebar-toggle {
+            position: fixed;
+            top: 18px;
+            left: calc(var(--sidebar-width) + 8px);
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 110;
+            box-shadow: var(--shadow);
+            transition: left 0.3s;
+        }
+        .sidebar.collapsed ~ #sidebar-toggle {
+            left: 68px;
+        }
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 32px 16px 32px 16px;
+            max-width: 900px;
+            margin-right: auto;
+            margin-top: 0;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed ~ main {
+            margin-left: 60px;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 24px;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        h2 {
+            font-size: 1.3rem;
+            color: var(--accent);
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .section-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px 20px 18px 20px;
+            min-width: 220px;
+            max-width: 320px;
+            flex: 1 1 220px;
+            transition: box-shadow 0.2s, transform 0.2s;
+            margin-bottom: 1rem;
+            text-decoration: none;
+            color: var(--text);
+            position: relative;
+        }
+        .card:hover, .card:focus {
+            box-shadow: 0 4px 24px rgba(44,62,80,0.13);
+            transform: translateY(-4px) scale(1.02);
+        }
+        .course-code {
+            display: inline-block;
+            padding: 0.3em 0.8em;
+            border-radius: 0.7em;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.7em;
+            letter-spacing: 1px;
+        }
+        .options {
+            background: #f0f4fa;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .admin-actions {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
+        }
+        .edit-btn, .delete-btn {
+            padding: 0.4rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+        }
+        .edit-btn {
+            background: #007bff;
+        }
+        .delete-btn {
+            background: #dc3545;
+        }
+        .edit-btn:hover {
+            background: #0056b3;
+        }
+        .delete-btn:hover {
+            background: #a71d2a;
+        }
+        @media (max-width: 900px) {
+            main {
+                max-width: 98vw;
+                padding: 18px 4vw;
+            }
+            .section-content {
+                gap: 1rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .sidebar {
+                position: fixed;
+                width: 100vw;
+                height: 56px;
+                left: 0; top: 0; bottom: auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0 8px;
+                box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+                transition: height 0.3s, width 0.3s;
+            }
+            .sidebar img {
+                width: 36px;
+                height: 36px;
+                margin: 0 12px 0 0;
+            }
+            .sidebar ul {
+                display: flex;
+                flex-direction: row;
+                gap: 8px;
+                margin-left: 12px;
+            }
+            .sidebar ul a {
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 0.98rem;
+            }
+            .sidebar ul a li {
+                margin-left: 6px;
+            }
+            .sidebar.collapsed ul a li {
+                opacity: 0;
+                margin-left: 0;
+            }
+            #sidebar-toggle {
+                top: 64px;
+                left: 12px;
+            }
+            main {
+                margin-left: 0;
+                margin-top: 72px;
+                padding: 12px 2vw;
+            }
+            .section-content {
+                flex-direction: column;
+                gap: 0.7rem;
+            }
+            .card {
+                min-width: unset;
+                max-width: 100vw;
+                width: 100%;
+                padding: 16px 10px 12px 10px;
+            }
+        }
+    </style>
+</body>
+</html>

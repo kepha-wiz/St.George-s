@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Create Assignment</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/createAssignment.css') }}">
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f6f8fa;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+main {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+h1 {
+    color: #2d3a4a;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    text-align: center;
+}
+.card {
+    background: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+.assignment-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+label.items {
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 0.3rem;
+    display: block;
+}
+input[type="text"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-top: 0.2rem;
+    margin-bottom: 0.5rem;
+    background: #fff;
+    transition: border 0.2s;
+}
+input[type="text"]:focus, textarea:focus {
+    border: 1.5px solid #2563eb;
+    outline: none;
+}
+textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.radio-group label {
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0;
+}
+.quiz-content, .essay-content {
+    margin-top: 0.5rem;
+}
+.mcq-options {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+}
+.mcq-option label {
+    margin-right: 0.3rem;
+    font-weight: 500;
+}
+button[type="button"], button[type="submit"] {
+    padding: 0.6rem 1.4rem;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 1rem;
+    margin-top: 0.7rem;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+}
+button[type="button"]:hover, button[type="submit"]:hover {
+    background: #1e40af;
+}
+.back-button {
+    display: inline-block;
+    margin: 1rem 0 0 1rem;
+    padding: 0.5rem 1.2rem;
+    background: #2563eb;
+    color: #fff;
+    border-radius: 6px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(37,99,235,0.08);
+    transition: background 0.2s;
+    text-decoration: none;
+}
+.back-button:hover {
+    background: #1e40af;
+}
+@media (max-width: 700px) {
+    main {
+        max-width: 98vw;
+        padding: 0.7rem;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    .card {
+        padding: 1rem 0.7rem;
+    }
+    h1 {
+        font-size: 1.3rem;
+    }
+    .mcq-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+@media (max-width: 480px) {
+    body {
+        font-size: 0.97rem;
+    }
+    .back-button {
+        margin: 0.5rem 0 0 0.5rem;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.97rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+}
+</style>
+    </head>
+    <body>
+        {% include 'sidebar.html' %}
+        <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+    
+    <main>
+        <h1>Create Assignment</h1>
+        <div class="card">
+            <form class="assignment-form" method="POST" action="/course/{{ course_id }}/createAssignment"
+            enctype="multipart/form-data" onsubmit="return validateForm()">
+
+            <label for="title" class="items">Title</label>
+            <input type="text" id="title" name="title" required>
+
+            <div class="assignment-type radio-group">
+                <label class="items">Assignment Type</label>
+                <label><input type="radio" name="assignmentType" value="quiz" onclick="toggleAssignmentType()">
+                Quiz</label>
+                <label><input type="radio" name="assignmentType" value="essay" onclick="toggleAssignmentType()" required>
+                Essay</label>
+            </div>
+
+            <div class="quiz-content">
+                <div id="quiz-questions">
+                <label for="question1" class="items">Question 1</label>
+                <input type="text" id="question1" name="question1" class="question-input">
+                <div class="mcq-options" id="mcq-options-1">
+                    <div class="mcq-option" id="mcq-option-1">
+                    <label for="option1-1">A:</label>
+                    <input type="text" id="option1-1" name="option1-1">
+                    </div>
+                    <div class="mcq-option" id="mcq-option-2">
+                    <label for="option1-2">B:</label>
+                    <input type="text" id="option1-2" name="option1-2">
+                    </div>
+                    <div class="mcq-option" id="mcq-option-3">
+                    <label for="option1-3">C:</label>
+                    <input type="text" id="option1-3" name="option1-3">
+                    </div>
+                </div>
+                
+                <button type="button" id="add-question-button" onclick="addQuestion()">Add Question</button>
+                </div>
+            </div>
+
+            <div class="essay-content" style="display: none;">
+                <div class="content-type">
+                <label class="items">Content Type</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="contentMethodEssay" id="fileRadio" value="file"
+                        onclick="toggleContentMethod('essay')" checked> Upload File</label>
+                    <label><input type="radio" name="contentMethodEssay" id="textRadio" value="text"
+                        onclick="toggleContentMethod('essay')"> Enter Text</label>
+                </div>
+                </div>
+
+                <div class="file-upload-essay visible">
+                <label for="file-upload-essay" class="items">Upload File</label>
+                <input type="file" id="file-upload-essay" name="file-upload-essay">
+                </div>
+
+                <div class="text-entry-essay">
+                <label for="text-entry-essay">Text Entry</label>
+                <textarea id="text-entry-essay" name="text-entry-essay"></textarea>
+                </div>
+
+            </div>
+
+            <button type="submit">Post Assignment</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        function toggleAssignmentType() {
+            var assignmentType = $('input[name="assignmentType"]:checked').val()
+            var quizContent = $('.quiz-content')
+            var essayContent = $('.essay-content')
+
+            quizContent.css('display', assignmentType === 'quiz' ? 'block' : 'none')
+            essayContent.css('display', assignmentType === 'essay' ? 'block' : 'none')
+        }
+
+        function toggleContentMethod(assignmentType) {
+            var fileUpload = $(`.file-upload-${assignmentType}`)
+            var textEntry = $(`.text-entry-${assignmentType}`)
+
+            fileUpload.css('display', assignmentType === 'essay' && fileRadio.checked ? 'block' : 'none')
+            textEntry.css('display', assignmentType === 'essay' && textRadio.checked ? 'block' : 'none')
+        }
+
+        function addQuestion() {
+            var quizQuestions = $('#quiz-questions')
+            var questionCount = quizQuestions.find('.question-input').length + 1
+            var newLabel = $('<label></label>')
+                .attr({
+                    'for': 'question' + questionCount,
+                    'class': 'items'
+                })
+                .text('Question ' + questionCount)
+
+            var newInput = $('<input>')
+                .addClass('question-input')
+                .attr({
+                    'type': 'text',
+                    'id': 'question' + questionCount,
+                    'name': 'question' + questionCount,
+                })
+
+            var mcqOptionsDiv = $('<div></div>')
+                .addClass('mcq-options')
+                .attr({ 'id': 'mcq-options-' + questionCount })
+
+            for (let i = 1; i <= 3; i++) {
+                let mcqOptionDiv = $('<div></div>').addClass('mcq-option')
+
+                let optionLabel = $('<label></label>')
+                    .attr({ 'for': `option${questionCount}-${i}` })
+                    .text(`${String.fromCharCode(64 + i)}:`)
+
+                let optionInput = $('<input>').attr({
+                    'type': 'text',
+                    'placeholder': 'Option',
+                    'id': `option${questionCount}-${i}`,
+                    'name': `option${questionCount}-${i}`
+                });
+
+                mcqOptionDiv.append(optionLabel, optionInput)
+                mcqOptionsDiv.append(mcqOptionDiv)
+            }
+
+            var addButton = quizQuestions.find('button')
+            newLabel.insertBefore(addButton)
+            newInput.insertBefore(addButton)
+            mcqOptionsDiv.insertBefore(addButton)
+            gradeInputLabel.insertBefore(addButton)
+            gradeInput.insertBefore(addButton)
+        }
+
+        function validateForm() {
+            const assignmentType = $('input[name="assignmentType"]:checked').val()
+            if (assignmentType === 'quiz') {
+                const questionInputs = $('.question-input')
+                for (let input of questionInputs) {
+                    if ($(input).val().trim() === '') {
+                        alert('Please fill in all the quiz questions.')
+                        return false
+                    }
+                }
+            }
+            else if (assignmentType === 'essay') {
+                const fileRadio = $('#fileRadio')
+                const fileUpload = $('#file-upload-essay')
+                if (fileRadio.checked && !fileUpload.files.length) {
+                    alert('Please upload a file for the essay.')
+                    return false
+                }
+            }
+            return true
+        }
+    </script>
+    </body>
+</html>

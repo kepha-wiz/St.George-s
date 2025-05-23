@@ -1,0 +1,142 @@
+.course-code {
+    font-size: 2rem;
+    color: white;
+    margin: 0;
+    width: 100%;
+    padding: 2.5rem 0;
+    border-radius: 1rem;
+    background-color: #1f3579; /* for contrast */
+    text-align: center;
+    box-sizing: border-box;
+}
+.admin-actions {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+.edit-btn, .delete-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: #fff;
+    font-weight: bold;
+}
+.edit-btn {
+    background: #007bff;
+}
+.delete-btn {
+    background: #dc3545;
+}
+.edit-btn:hover {
+    background: #0056b3;
+}
+.delete-btn:hover {
+    background: #a71d2a;
+}
+/* Card styling */
+.card {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 0.2rem 0.8rem rgba(0,0,0,0.08);
+    margin: 1rem 0;
+    padding: 2rem 1.5rem;
+    transition: box-shadow 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card.options {
+    background: #f5f7fa;
+    color: #1f3579;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+}
+
+.card:hover {
+    box-shadow: 0 0.4rem 1.2rem rgba(0,0,0,0.15);
+}
+
+.section-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+main {
+    margin-left: 240px; /* leave space for sidebar */
+    padding: 2rem;
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    main {
+        margin-left: 200px;
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 900px) {
+    main {
+        margin-left: 0;
+        padding: 1rem;
+    }
+    .section-content {
+        gap: 1rem;
+    }
+}
+
+/* Responsive tweaks for dashboard cards and layout */
+@media (max-width: 768px) {
+    main, .section-content {
+        width: 100%;
+        padding: 0 0.5rem;
+        box-sizing: border-box;
+        margin-left: 0;
+    }
+    .section-content {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0;
+    }
+    .card {
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        font-size: 1rem;
+        padding: 1rem;
+        margin: 0;
+    }
+    .course-code {
+        font-size: 1.2rem;
+        padding: 1rem 0.5rem;
+    }
+    h1, h2, h3 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .card, .course-code {
+        font-size: 1rem;
+        padding: 0.7rem 0.3rem;
+    }
+    h1 {
+        font-size: 1.1rem;
+    }
+    h2, h3 {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+    main {
+        padding: 0.2rem;
+    }
+    .section-content {
+        gap: 0.5rem;
+    }
+}

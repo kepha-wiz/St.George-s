@@ -1,0 +1,80 @@
+input[type="text"], textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    padding: 1rem;
+    margin: 1rem 0;
+    border: 1px solid #dfe3e8;
+    border-radius: 2rem;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+textarea {
+    min-height: 8rem;
+}
+
+button {
+    padding: 12px 24px;
+    background-color: #0056b3; /* Softened button color */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.card {
+    min-width: 42rem;
+}
+
+#post-discussion:hover,
+#discussion-card:hover,
+.reply-div:hover {
+    transform: translateY(0px);
+}
+
+button {
+    border-radius: 2rem;
+    width: 100%;
+    background-color: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    transition: background 0.5s;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 1.15rem;
+    border: 1px solid #ccc;
+}
+
+button:hover {
+    background-color: #2e7932;
+}
+
+p {
+    margin-bottom: 0.5rem;
+}
+
+a {
+    color: black;
+}
+
+#discussion-card {
+    width: 65%;
+}
+
+section {
+    width: 65%;
+}
+
+.reply-div {
+    min-width: 60rem;
+}
+
+.reply {
+    color: black;
+}
+
+.reply-form {
+    width: 60rem;
+}

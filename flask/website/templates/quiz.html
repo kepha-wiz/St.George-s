@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ quiz.quiz_name }}</title>
+    <style>
+        :root {
+            --sidebar-width: 220px;
+            --primary: #2d3a4b;
+            --accent: #4f8cff;
+            --background: #f7f9fb;
+            --card-bg: #fff;
+            --border-radius: 14px;
+            --shadow: 0 2px 12px rgba(44,62,80,0.07);
+            --text: #222;
+            --muted: #888;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background: var(--background);
+            font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+            color: var(--text);
+            min-height: 100vh;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--primary);
+            color: #fff;
+            padding: 32px 0 0 0;
+            box-shadow: 2px 0 12px rgba(44,62,80,0.07);
+            z-index: 100;
+            transition: width 0.3s;
+            overflow-x: hidden;
+        }
+        .sidebar.collapsed {
+            width: 60px;
+        }
+        .sidebar img {
+            display: block;
+            margin: 0 auto 32px auto;
+            width: 48px;
+            height: 48px;
+            transition: width 0.3s, height 0.3s;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul a {
+            text-decoration: none;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 14px 32px;
+            border-radius: 0 24px 24px 0;
+            transition: background 0.2s, padding 0.3s;
+            white-space: nowrap;
+        }
+        .sidebar ul a:hover, .sidebar ul a:focus {
+            background: var(--accent);
+        }
+        .sidebar ul a li {
+            transition: opacity 0.3s, margin 0.3s;
+            opacity: 1;
+            margin-left: 12px;
+        }
+        .sidebar.collapsed ul a {
+            padding: 14px 16px;
+            justify-content: center;
+        }
+        .sidebar.collapsed ul a li {
+            opacity: 0;
+            margin-left: 0;
+            pointer-events: none;
+        }
+        #sidebar-toggle {
+            position: fixed;
+            top: 18px;
+            left: calc(var(--sidebar-width) + 8px);
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 110;
+            box-shadow: var(--shadow);
+            transition: left 0.3s;
+        }
+        .sidebar.collapsed ~ #sidebar-toggle {
+            left: 68px;
+        }
+        main {
+            margin-left: var(--sidebar-width);
+            padding: 32px 16px 32px 16px;
+            max-width: 700px;
+            margin-right: auto;
+            margin-top: 0;
+            transition: margin-left 0.3s;
+        }
+        .sidebar.collapsed ~ main {
+            margin-left: 60px;
+        }
+        .back-button {
+            display: inline-block;
+            margin: 24px 0 0 0;
+            padding: 8px 20px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            box-shadow: var(--shadow);
+            transition: background 0.2s;
+        }
+        .back-button:hover, .back-button:focus {
+            background: #356ad8;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 24px;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+        }
+        .quiz-form {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 32px 20px;
+            margin-top: 16px;
+        }
+        .question {
+            margin-bottom: 32px;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        .options label {
+            display: block;
+            background: #f0f4fa;
+            border-radius: 8px;
+            padding: 10px 16px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 1rem;
+        }
+        .options input[type="radio"] {
+            margin-right: 12px;
+            accent-color: var(--accent);
+        }
+        .options label:hover, .options label:focus-within {
+            background: #e3edff;
+        }
+        .submit-quiz {
+            display: block;
+            width: 100%;
+            padding: 14px 0;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 18px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: background 0.2s;
+        }
+        .submit-quiz:hover, .submit-quiz:focus {
+            background: #356ad8;
+        }
+        h4 {
+            color: var(--muted);
+            text-align: center;
+            margin: 32px 0;
+        }
+        @media (max-width: 900px) {
+            main {
+                max-width: 98vw;
+                padding: 18px 4vw;
+            }
+        }
+        @media (max-width: 600px) {
+            .sidebar {
+                position: fixed;
+                width: 100vw;
+                height: 56px;
+                left: 0; top: 0; bottom: auto;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                padding: 0 8px;
+                box-shadow: 0 2px 12px rgba(44,62,80,0.07);
+                transition: height 0.3s, width 0.3s;
+            }
+            .sidebar img {
+                width: 36px;
+                height: 36px;
+                margin: 0 12px 0 0;
+            }
+            .sidebar ul {
+                display: flex;
+                flex-direction: row;
+                gap: 8px;
+                margin-left: 12px;
+            }
+            .sidebar ul a {
+                padding: 8px 12px;
+                border-radius: 8px;
+                font-size: 0.98rem;
+            }
+            .sidebar ul a li {
+                margin-left: 6px;
+            }
+            .sidebar.collapsed ul a li {
+                opacity: 0;
+                margin-left: 0;
+            }
+            #sidebar-toggle {
+                top: 64px;
+                left: 12px;
+            }
+            main {
+                margin-left: 0;
+                margin-top: 72px;
+                padding: 12px 2vw;
+            }
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <a href="{{ url_for('views.home') }}">
+            <img src="{{ url_for('static', filename='blacklogo.svg') }}" alt="logo">
+        </a>
+        <ul>
+            <a href="{{ url_for('views.home') }}"><li>Dashboard</li></a>
+            <a href="{{ url_for('views.account_details') }}"><li>My Profile</li></a>
+            <a href="{{ url_for('views.edit_details') }}"><li>Settings</li></a>
+            <a href="{{ url_for('auth.logout') }}" id="logout"><li>Logout</li></a>
+        </ul>
+    </div>
+    <button id="sidebar-toggle" aria-label="Toggle sidebar">
+        <span id="arrow">&#9776;</span>
+    </button>
+    <a href="{{ url_for('views.course_page', course_id=course_id) }}" class="back-button">Back</a>
+    <main>
+        <h1>{{ quiz.quiz_name }}</h1>
+        <form class="quiz-form" method="POST" action="/submit_quiz">
+            {% if already_submitted %}
+                <h4>You have already submitted this quiz</h4>
+            {% else %}
+                {% for question in questions %}
+                    <div class="question">
+                        <p class="question-text">{{ loop.index }}. {{ question.question_text }}</p>
+                        <div class="options">
+                            <label>
+                                <input type="radio" required name="{{ question.id }}" value="{{ question.option1 }}">
+                                {{ question.option1 }}
+                            </label>
+                            <label>
+                                <input type="radio" required name="{{ question.id }}" value="{{ question.option2 }}">
+                                {{ question.option2 }}
+                            </label>
+                            <label>
+                                <input type="radio" required name="{{ question.id }}" value="{{ question.option3 }}">
+                                {{ question.option3 }}
+                            </label>
+                        </div>
+                    </div>
+                {% endfor %}
+                <input type="hidden" name="quiz_id" value="{{ quiz.id }}">
+                {% if current_user.user_type == 'student' %}
+                    <input type="hidden" name="course_id" value="{{ course_id }}">
+                    <button type="submit" class="submit-quiz">Submit Answers</button>
+                {% endif %}
+            {% endif %}
+        </form>
+    </main>
+    <script>
+        // Sidebar toggle
+        const sidebar = document.getElementById('sidebar');
+        const toggleBtn = document.getElementById('sidebar-toggle');
+        const arrow = document.getElementById('arrow');
+        toggleBtn.onclick = function() {
+            sidebar.classList.toggle('collapsed');
+            if (sidebar.classList.contains('collapsed')) {
+                arrow.innerHTML = '&#9654;';
+            } else {
+                arrow.innerHTML = '&#9776;';
+            }
+        };
+
+        // Disable radio buttons for non-students
+        $(function() {
+            if ("{{ current_user.user_type }}" !== "student") {
+                $('input[type="radio"]').prop('disabled', true);
+                $('.submit-quiz').prop('disabled', true).css('opacity', 0.6).css('cursor', 'not-allowed');
+            }
+        });
+    </script>
+</body>
+</html>

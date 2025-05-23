@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Live Lesson</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+</head>
+<body>
+    {% include 'sidebar.html' %}
+    <main class="content">
+        <a href="{{ url_for('views.home') }}" class="back-button">Back</a>
+        <h1>Start Live Lesson for {{ course.course_name }}</h1>
+        <form method="POST" class="form">
+            <label for="title">Lesson Title</label>
+            <input type="text" name="title" id="title" required>
+
+            <label for="stream_url">Stream URL (e.g. YouTube Live Embed Link)</label>
+            <input type="url" name="stream_url" id="stream_url" required>
+
+            <input type="submit" value="Go Live" class="submit-btn">
+        </form>
+    </main>
+</body>
+</html>
